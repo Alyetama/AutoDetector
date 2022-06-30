@@ -1,0 +1,86 @@
+version: "3.3"
+
+services:
+
+  nginx:
+    image: nginx:1.21
+    ports:
+      - "${LABEL_STUDIO_PORT:-8080}:80"
+    depends_on:
+      - app
+    environment:
+      - LABEL_STUDIO_HOST=${LABEL_STUDIO_HOST}
+      - NGINX_FILE=${NGINX_FILE:-default.conf}
+    volumes:
+      - source: static
+        target: /label-studio/label_studio
+        type: volume
+        volume:
+          nocopy: true
+      - ./local-data:/label-studio/data:rw
+      - ./deploy/nginx/${NGINX_FILE:-default.conf}:/etc/nginx/templates/${NGINX_FILE:-default.conf}.template
+      - ./deploy/nginx/scripts:/docker-entrypoint.d/label-studio
+    command: nginx -g "daemon off;"
+
+
+  app:
+    stdin_open: true
+    tty: true
+    build: .
+    image: heartexlabs/label-studio:latest
+    expose:
+      - "${LABEL_STUDIO_PORT:-8080}"
+    depends_on:
+      - db
+    environment:
+      - DJANGO_DB=default
+      - POSTGRE_HOST=${POSTGRE_HOST}
+      - POSTGRE_PORT=${POSTGRE_PORT}
+      - POSTGRE_NAME=${POSTGRE_NAME}
+      - POSTGRE_USER=${POSTGRE_USER}
+      - POSTGRE_PASSWORD=${POSTGRE_PASSWORD}
+      - LABEL_STUDIO_USERNAME=${LABEL_STUDIO_USERNAME}
+      - LABEL_STUDIO_PASSWORD=${LABEL_STUDIO_PASSWORD}
+      - DISABLE_SIGNUP_WITHOUT_LINK=true
+      - LABEL_STUDIO_COPY_STATIC_DATA=true
+    volumes:
+      - ./local-data:/label-studio/data:rw
+      - source: static
+        target: /label-studio/static_volume
+        type: volume
+        volume:
+          nocopy: true
+
+
+  db:
+    image: postgres:11.5
+    hostname: db
+    restart: always
+    ports:
+      - ${POSTGRE_PORT:-5432}:5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_PASSWORD=${POSTGRE_PASSWORD}
+    volumes:
+      - ${POSTGRES_DATA_DIR:-./postgres-data}:/var/lib/postgresql/data
+
+
+  minio:
+    image: minio/minio
+    restart: always
+    ports:
+      - ${MINIO_SERVER_PORT}:9000
+      - ${MINIO_CONSOLE_PORT}:9001
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./buckets:/data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+      - MINIO_DOMAIN=${MINIO_DOMAIN}
+      - MINIO_SERVER_URL=${MINIO_SERVER_URL}
+      - MINIO_BROWSER_REDIRECT_URL=${MINIO_BROWSER_REDIRECT_URL}
+
+
+volumes:
+  static: {}
