@@ -24,7 +24,11 @@ USER_EMAIL_ADDRESS = os.environ['USER_EMAIL_ADDRESS']
 if os.getenv('TAILSCALE_IP'):
     LOCAL_ADDRESS = os.getenv('TAILSCALE_IP')
 else:
-    S3_ENDPOINT = socket.gethostbyname(socket.gethostname())
+    S3_ENDPOINT = os.popen(
+        'ifconfig | grep "inet " | grep -Fv 127.0.0.1 | awk \'{print $2}\' | head -1'  # noqa: E501
+        ).read().strip()
+    if not S3_ENDPOINT:
+        S3_ENDPOINT = socket.gethostbyname(socket.gethostname())
     LOCAL_ADDRESS = '127.0.0.1'
 
 with open('.env', 'w') as f:

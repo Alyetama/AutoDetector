@@ -41,9 +41,21 @@ fi
 
 # -----------------------------------------------------------------------------
 
-brew install git curl wget netcat
-brew install miniforge
-brew install minio/stable/mc
+if ! [ -x "$(command -v git)" ]; then
+  brew install git
+fi
+
+if ! [ -x "$(command -v curl)" ]; then
+  brew install curl
+fi
+
+if ! [ -x "$(command -v netcat)" ]; then
+  brew install netcat
+fi
+
+if [ ! -d $HOME/miniforge3 ]; then
+  brew install miniforge
+fi
 
 # -----------------------------------------------------------------------------
 
@@ -163,7 +175,7 @@ printf "Follow the steps below to authenticate to MinIO's API:
     2. Use the credentials above to log in.
     3. Then, visit: %s/identity/account/new-account
     4. Click on 'Create'.
-    5. Copy the Access and Secret Key, then paste them below." "${S3_BROWSER_REDIRECT_URL}"
+    5. Copy the Access and Secret Key, then paste them below." "${S3_BROWSER_REDIRECT_URL}" "${S3_BROWSER_REDIRECT_URL}"
 
 printf "\nAccess Key: "
 until [[ $S3_ACCESS_KEY != '' ]]; do

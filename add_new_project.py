@@ -157,8 +157,12 @@ def add_data_storage(project_response: dict,
     }
 
     storage_response = api_request(**storage_request)
-
     print(storage_response)
+
+    while True:
+        done_resp = input('Done (yes/no)? ')
+        if done_resp.lower() in ['yes', 'y']:
+            break
 
     print(
         '\nStep 3:\n'
