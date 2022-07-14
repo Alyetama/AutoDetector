@@ -12,6 +12,8 @@ keyboard_interrupt() {
 
 trap keyboard_interrupt SIGINT
 
+# -----------------------------------------------------------------------------
+
 if ! [ "$(uname)" = "Darwin" ]; then
   echo 'ERROR: Not running on macOS!'
   exit 1
@@ -22,12 +24,13 @@ if ! [ -x "$(command -v docker)" ]; then
   exit 1
 fi
 
-if [[ $USER_EMAIL_ADDRESS = '' ]]; then
-  printf "\nEmail address: "
-  read -r USER_EMAIL_ADDRESS
-  echo "USER_EMAIL_ADDRESS=$USER_EMAIL_ADDRESS" >> .env
-  export USER_EMAIL_ADDRESS="$USER_EMAIL_ADDRESS"
-fi
+# -----------------------------------------------------------------------------
+
+printf "\nEmail address: "
+read -r USER_EMAIL_ADDRESS
+echo "USER_EMAIL_ADDRESS=$USER_EMAIL_ADDRESS" >> .env
+export USER_EMAIL_ADDRESS="$USER_EMAIL_ADDRESS"
+
 
 printf "\nBe patient. This may take a while..."
 echo "Don't close this window."
@@ -112,6 +115,8 @@ set -o allexport; source '.env'; set +o allexport
 
 mkdir -p buckets/images buckets/api buckets/tables \
   buckets/public buckets/datasets buckets/models buckets/logs
+
+chmod -R 770 buckets
 
 # -----------------------------------------------------------------------------
 

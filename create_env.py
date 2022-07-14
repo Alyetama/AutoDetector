@@ -37,7 +37,7 @@ with open('.env', 'w') as f:
     f.write(f'S3_DOMAIN={LOCAL_ADDRESS}:9000\n')
     f.write(f'S3_SERVER_PORT=9000\n')
     f.write(f'S3_CONSOLE_PORT=9001\n')
-    f.write(f'S3_SERVER_URL=http://{LOCAL_ADDRESS}:9000\n')
+    f.write(f'S3_SERVER_URL=http://{S3_ENDPOINT}:9000\n')
     f.write(f'S3_BROWSER_REDIRECT_URL=http://{LOCAL_ADDRESS}:9001\n\n')
     f.write(f'S3_ENDPOINT=http://{S3_ENDPOINT}:9000\n\n')
 

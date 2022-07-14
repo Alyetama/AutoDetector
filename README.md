@@ -6,7 +6,12 @@ Create a custom computer vision model from any dataset.
 
 Download and install `Docker` from here: https://docs.docker.com/get-docker/.
 
-When the installation is complete, follow the instructions below according to your operating system.
+**Improtant notes For macOS users:**
+
+- If you're on macOS, click on the Apple icon top left -> `About This Mac`. If you see `... Intel ...` in the `processor` field, then download "Mac with Intel chip". If you see `Apple M1` under `Chip` field, then downlaod "Mac with Apple chip".
+
+
+When the installation is complete, open `Docker` under the `Applications` folder. Close the Docker window, we don't need it. Docker is now running the background (on macOS: docker icon should appear in the menu bar). Wait for a minute or two, then follow the instructions below according to your operating system.
 
 ### macOS
 
