@@ -14,7 +14,7 @@ Under `Applications` -> `Utilities`, open `Terminal`. Then copy and run the foll
 
 #### Step 1: Clone the repository
 
-```
+```sh
 cd ~/Desktop  # If you want to clone to your Desktop
 
 git clone https://github.com/Alyetama/AutoDetector.git
@@ -23,10 +23,11 @@ cd AutoDetector
 
 #### Step 2: Run the convenience script
 
-Run the line below and answer any prompts. At the end of the script, you will see a message that contains the URLs and credentials for your Label-studio and cloud storage application. Save them to a safe place.
+Run the line below and answer any prompts. At the end of the script, you will see a message that contains the URLs and credentials for your Label-studio and cloud storage application. Bookmark the URLs and save the credentials in a safe place.
 
-```
-bash init-darwin.sh
+```sh
+chmod +x init-darwin.zsh
+./init-darwin.zsh
 ```
 
 ### Linux

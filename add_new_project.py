@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-import ipaddress
+# import ipaddress
 import json
 import os
 import random
-import shutil
 import string
-from pathlib import Path
+import time
 from typing import Optional, Union
 
 import requests
@@ -35,10 +34,11 @@ def api_request(url: str,
     headers['Content-type'] = 'application/json'
     headers['Authorization'] = f'Token {os.environ["LABEL_STUDIO_TOKEN"]}'
     if method.lower() == 'post':
-        return requests.post(url, headers=headers,
-                             data=json.dumps(data)).json()
+        response = requests.post(url, headers=headers,
+                                 data=json.dumps(data)).json()
     elif method.lower() == 'get':
-        return requests.get(url, headers=headers).json()
+        response = requests.get(url, headers=headers).json()
+    return response
 
 
 def add_new_project() -> Optional[dict]:
@@ -60,7 +60,7 @@ def add_new_project() -> Optional[dict]:
             ' ', '_')
         if len(new_project_folder_name) < 3:
             print(
-                '\033[91mProject name must be at least 3 characters long.\033[0m'  # noqa: E501
+                '\033[91mProject name must be at least 3 characters long.\033[0m\n'  # noqa: E501
             )
             continue
         elif any(c for c in new_project_folder_name if c not in allowed):
@@ -92,10 +92,19 @@ def add_new_project() -> Optional[dict]:
 
     print('\n\nStep 1:')
     print(
-        '    Visit the URL below to add labels (1 label per line), '
+        '    - Visit the URL below to add labels (1 label per line), '
         'then click on `Add` -> `Save`:\n'
         f'    {LABEL_STUDIO_HOST}/projects/{response["id"]}/settings/labeling'
         '\n\n')  # noqa: E501
+    time.sleep(3)
+    os.popen(
+        f'open {LABEL_STUDIO_HOST}/projects/{response["id"]}/settings/labeling'
+    )
+
+    while True:
+        done_resp = input('Done (yes/no)? ')
+        if done_resp.lower() in ['yes', 'y']:
+            break
     return response
 
 
@@ -115,13 +124,17 @@ def add_data_storage(project_response: dict,
 
     """
     p_title = project_response['title']
-    Path(f'buckets/images/{p_title}').mkdir(parents=True, exist_ok=True)
 
     print('\nStep 2:')
+    print('    - Visit the URL below to upload your image files. Simply '
+          'click on the "upload" button to upload your files.')
+    time.sleep(1)
+    print(f'{os.environ["S3_SERVER_URL"]}/buckets/images/browse')
+    os.popen(
+        f'open {os.environ["S3_BROWSER_REDIRECT_URL"]}/buckets/images/browse')
 
-    print('    Copy your images to folder: '
-          f'`buckets` -> `images` -> `{p_title}` '
-          f'(i.e., buckets/images/{p_title})')
+    if 'http://' not in os.environ['S3_ENDPOINT']:
+        os.environ['S3_ENDPOINT'] = f'http://{os.environ["S3_ENDPOINT"]}'
 
     storage_dict = {
         "type": "s3",
@@ -130,10 +143,10 @@ def add_data_storage(project_response: dict,
         "bucket": bucket_name,
         "prefix": prefix,
         "use_blob_urls": True,
-        "aws_access_key_id": os.environ['MINIO_ACCESS_KEY'],
-        "aws_secret_access_key": os.environ['MINIO_SECRET_KEY'],
+        "aws_access_key_id": os.environ['S3_ACCESS_KEY'],
+        "aws_secret_access_key": os.environ['S3_SECRET_KEY'],
         "region_name": 'us-east-1',
-        "s3_endpoint": os.environ['MINIO_SERVER_URL'],
+        "s3_endpoint": os.environ['S3_ENDPOINT'],
         "recursive_scan": True,
         "project": project_response['id']
     }
@@ -145,25 +158,29 @@ def add_data_storage(project_response: dict,
 
     storage_response = api_request(**storage_request)
 
+    print(storage_response)
+
     print(
-        '    After you have added your images, visit the URL below, '
+        '\nStep 3:\n'
+        '    - After uploading your images, visit the URL below, '
         'then click on `Sync Storage`:\n'
         f'    {LABEL_STUDIO_HOST}/projects/{project_response["id"]}/settings/storage\n'  # noqa: E501
     )
-
-    if shutil.which('open'):
-        os.popen(f'open buckets/images/{p_title}')
+    time.sleep(1)
+    os.popen(
+        f'open {LABEL_STUDIO_HOST}/projects/{project_response["id"]}/settings/storage'  # noqa: E501
+    )
     return storage_response
 
 
 if __name__ == '__main__':
     load_dotenv()
     LABEL_STUDIO_HOST = os.environ['LABEL_STUDIO_HOST']
-    try:
-        if ipaddress.ip_address(
-                os.environ['LABEL_STUDIO_HOST'].split('/')[-1]):
-            LABEL_STUDIO_HOST = f'{os.environ["LABEL_STUDIO_HOST"]}:{os.environ["LABEL_STUDIO_PORT"]}'  # noqa: E501
-    except ValueError:
-        pass
+    # try:
+    #     if ipaddress.ip_address(
+    #             os.environ['LABEL_STUDIO_HOST'].split('/')[-1]):
+    #         LABEL_STUDIO_HOST = f'{os.environ["LABEL_STUDIO_HOST"]}:{os.environ["LABEL_STUDIO_PORT"]}'  # noqa: E501
+    # except ValueError:
+    #     pass
     new_project = add_new_project()
     add_data_storage(new_project)
