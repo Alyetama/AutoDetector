@@ -2,6 +2,7 @@
 # coding: utf-8
 
 # import ipaddress
+
 import json
 import os
 import random
@@ -22,7 +23,7 @@ def api_request(url: str,
     Args:
         url (str): The url to make the request to.
         method (str): The HTTP method to use. Defaults to 'get'.
-        data (Optional[dict]): The data to send with the request. Defaults to 
+        data (Optional[dict]): The data to send with the request. Defaults to
             None.
 
     Returns:

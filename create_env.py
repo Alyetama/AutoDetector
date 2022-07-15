@@ -2,11 +2,8 @@
 # coding: utf-8
 
 import os
-import random
 import secrets
 import socket
-import string
-import sys
 
 
 def generate_passphrase(length=4):
@@ -26,7 +23,7 @@ if os.getenv('TAILSCALE_IP'):
 else:
     S3_ENDPOINT = os.popen(
         'ifconfig | grep "inet " | grep -Fv 127.0.0.1 | awk \'{print $2}\' | head -1'  # noqa: E501
-        ).read().strip()
+    ).read().strip()
     if not S3_ENDPOINT:
         S3_ENDPOINT = socket.gethostbyname(socket.gethostname())
     LOCAL_ADDRESS = '127.0.0.1'

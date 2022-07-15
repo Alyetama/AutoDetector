@@ -38,42 +38,38 @@ echo "If prompted for a password, use your computer's password."
 
 sleep 10
 
-if ! [ -x "$(command -v brew)" ]; then
-  echo | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-fi
+# if ! [ -x "$(command -v brew)" ]; then
+#   echo | /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# fi
+
+# # -----------------------------------------------------------------------------
+
+# if ! [ -x "$(command -v git)" ]; then
+#   brew install git
+# fi
+
+# if ! [ -x "$(command -v curl)" ]; then
+#   brew install curl
+# fi
+
+# if [ ! -d $HOME/miniforge3 ]; then
+#   brew install miniforge
+# fi
 
 # -----------------------------------------------------------------------------
 
-if ! [ -x "$(command -v git)" ]; then
-  brew install git
-fi
+# source "$HOME/miniforge3/bin/activate"
+# conda init
+# # shellcheck disable=SC2046
+# conda init $(basename "$SHELL")
+# source "$HOME/.zshrc"
+python3 -V
 
-if ! [ -x "$(command -v curl)" ]; then
-  brew install curl
-fi
-
-if ! [ -x "$(command -v netcat)" ]; then
-  brew install netcat
-fi
-
-if [ ! -d $HOME/miniforge3 ]; then
-  brew install miniforge
-fi
+pip3 install requests python-dotenv
 
 # -----------------------------------------------------------------------------
 
-source "$HOME/miniforge3/bin/activate"
-conda init
-# shellcheck disable=SC2046
-conda init $(basename "$SHELL")
-source "$HOME/.zshrc"
-python -V
-
-pip install requests python-dotenv
-
-# -----------------------------------------------------------------------------
-
-if [[ "$1" = "--use-tailscale" ]]; then
+if [[ "$1" = "--enable-tailscale" ]]; then
   brew install --cask tailscale
   brew install tailscale
   open '/Applications/Tailscale.app'
@@ -108,7 +104,7 @@ fi
 
 # -----------------------------------------------------------------------------
 
-python create_env.py || exit 1
+python3 create_env.py || exit 1
 set -o allexport; source '.env'; set +o allexport
 
 # -----------------------------------------------------------------------------
@@ -198,7 +194,7 @@ printf "\n\n"
 
 # -----------------------------------------------------------------------------
 
-python add_new_project.py
+python3 add_new_project.py
 
 # -----------------------------------------------------------------------------
 
