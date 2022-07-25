@@ -83,7 +83,7 @@ services:
       - S3_SERVER_URL=${S3_SERVER_URL}
       - S3_BROWSER_REDIRECT_URL=${S3_BROWSER_REDIRECT_URL}
     volumes:
-      - buckets:/data
+      - ./buckets:/data
 
   mc:
     image: minio/mc
