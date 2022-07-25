@@ -197,3 +197,4 @@ local-data/
 postgres-data/
 debugging.ipynb
 postgres_helpers.py
+data/

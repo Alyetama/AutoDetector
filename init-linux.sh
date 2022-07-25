@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/bash
 
 keyboard_interrupt() {
   printf "\nReset database (y/n)? "
@@ -13,11 +13,6 @@ keyboard_interrupt() {
 trap keyboard_interrupt SIGINT
 
 # -----------------------------------------------------------------------------
-
-if ! [ "$(uname)" = "Darwin" ]; then
-  echo 'ERROR: Not running on macOS!'
-  exit 1
-fi
 
 if ! [ -x "$(command -v docker)" ]; then
   echo 'ERROR: docker is not installed!' >&2
@@ -41,35 +36,7 @@ sleep 10
 # -----------------------------------------------------------------------------
 
 python3 -V
-
 pip3 install requests python-dotenv
-
-# -----------------------------------------------------------------------------
-
-if [[ "$1" = "--enable-tailscale" ]]; then
-  brew install --cask tailscale
-  brew install tailscale
-  open '/Applications/Tailscale.app'
-
-  echo 'Accept the access prompt, then make sure to enable tailscale extension:
-    1. Open your system Settings.
-    2. Go to Security & Privacy -> General.
-    3. Click on the "Open Anyway" button.
-    4. Accept the VPN access prompt.'
-
-  echo -e "\n\e[36mThe sign up page will open in your browser Then, select:\e[0m"
-  echo -e "[[  \e[31mSign up with GitHub\e[0m  ]]\n"
-  sleep 5
-  open 'https://login.tailscale.com/start'
-
-  echo 'Click on tailscale logo in the system menubar, then select: log in...'
-  open '/Applications/Tailscale.app'
-
-  TAILSCALE_IP=$(tailscale ip --4)
-  export TAILSCALE_IP="$TAILSCALE_IP"
-  echo "export TAILSCALE_IP=$TAILSCALE_IP" >> "$HOME/.zshrc"
-  echo "TAILSCALE_IP=$TAILSCALE_IP" >> .env
-fi
 
 # -----------------------------------------------------------------------------
 
@@ -91,7 +58,8 @@ set -o allexport; source '.env'; set +o allexport
 # -----------------------------------------------------------------------------
 
 mkdir -p buckets/images buckets/api buckets/tables \
-  buckets/public buckets/datasets buckets/models buckets/logs
+  buckets/public buckets/datasets buckets/models buckets/logs \
+  buckets/.minio.sys
 chmod -R 770 buckets
 
 mkdir drop-images-here

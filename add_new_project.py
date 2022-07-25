@@ -5,6 +5,7 @@
 
 import json
 import os
+import platform
 import random
 import string
 import time
@@ -98,9 +99,11 @@ def add_new_project() -> Optional[dict]:
         f'    {LABEL_STUDIO_HOST}/projects/{response["id"]}/settings/labeling'
         '\n\n')  # noqa: E501
     time.sleep(3)
-    os.popen(
-        f'open {LABEL_STUDIO_HOST}/projects/{response["id"]}/settings/labeling'
-    )
+    if 'darwin' in platform.platform():
+        os.popen(
+            f'open {LABEL_STUDIO_HOST}/projects/{response["id"]}/settings'
+            '/labeling'
+        )
 
     while True:
         done_resp = input('Done (yes/no)? ')
@@ -131,8 +134,10 @@ def add_data_storage(project_response: dict,
           'click on the "upload" button to upload your files.')
     time.sleep(1)
     print(f'{os.environ["S3_SERVER_URL"]}/buckets/images/browse')
-    os.popen(
-        f'open {os.environ["S3_BROWSER_REDIRECT_URL"]}/buckets/images/browse')
+    if 'darwin' in platform.platform():
+        os.popen(
+            f'open {os.environ["S3_BROWSER_REDIRECT_URL"]}/buckets/images/'
+            'browse')
 
     if 'http://' not in os.environ['S3_ENDPOINT']:
         os.environ['S3_ENDPOINT'] = f'http://{os.environ["S3_ENDPOINT"]}'
@@ -172,9 +177,11 @@ def add_data_storage(project_response: dict,
         f'    {LABEL_STUDIO_HOST}/projects/{project_response["id"]}/settings/storage\n'  # noqa: E501
     )
     time.sleep(1)
-    os.popen(
-        f'open {LABEL_STUDIO_HOST}/projects/{project_response["id"]}/settings/storage'  # noqa: E501
-    )
+    if 'darwin' in platform.platform():
+        os.popen(
+            f'open {LABEL_STUDIO_HOST}/projects/'
+            f'{project_response["id"]}/settings/storage'  # noqa: E501
+        )
     return storage_response
 
 

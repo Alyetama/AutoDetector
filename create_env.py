@@ -4,10 +4,15 @@
 import os
 import secrets
 import socket
+from pathlib import Path
 
 
 def generate_passphrase(length=4):
-    with open('/usr/share/dict/words') as f:
+    if not Path('/usr/share/dict/words').exists():
+        words_file = 'words'
+    else:
+        words_file = '/usr/share/dict/words'
+    with open(words_file) as f:
         words = [word.strip() for word in f]
         passphrase = '-'.join(secrets.choice(words) for i in range(length))
         return passphrase

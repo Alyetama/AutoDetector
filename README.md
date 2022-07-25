@@ -28,7 +28,7 @@ cd AutoDetector
 
 #### Step 2: Run the convenience script
 
-Run the line below and answer any prompts. At the end of the script, you will see a message that contains the URLs and credentials for your Label-studio and cloud storage application. Bookmark the URLs and save the credentials in a safe place.
+Run the two lines below and answer any prompts. At the end of the script, you will see a message that contains the URLs and credentials for your Label-studio and cloud storage application. Bookmark the URLs and save the credentials in a safe place.
 
 ```sh
 chmod +x init-darwin.zsh

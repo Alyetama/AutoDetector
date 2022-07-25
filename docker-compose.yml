@@ -37,7 +37,7 @@ services:
       - db
     environment:
       - DJANGO_DB=default
-      - POSTGRE_HOST=db
+      - POSTGRE_HOST=${POSTGRES_HOST:-db}
       - POSTGRE_PORT=${POSTGRES_PORT:-5432}
       - POSTGRE_NAME=${POSTGRES_NAME:-postgres}
       - POSTGRE_USER=${POSTGRES_USER:-postgres}
@@ -60,7 +60,7 @@ services:
     hostname: db
     restart: always
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${POSTGRES_HOST}:${POSTGRES_PORT:-5432}:5432"
     environment:
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -83,7 +83,14 @@ services:
       - S3_SERVER_URL=${S3_SERVER_URL}
       - S3_BROWSER_REDIRECT_URL=${S3_BROWSER_REDIRECT_URL}
     volumes:
-      - ./buckets:/data
+      - buckets:/data
+
+  mc:
+    image: minio/mc
+    volumes:
+      - ./drop-images-here:/data
+      - ./mc_config:/root/.mc
 
 volumes:
+  #buckets:
   static: {}
